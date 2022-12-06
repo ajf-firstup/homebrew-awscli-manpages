@@ -1,5 +1,7 @@
 # Man Pages for AWS CLI
 
+TODO(ajf): Convert this into a proper Homebrew Tap.
+
 Many thanks to:
 
 https://tanguy.ortolo.eu/blog/article153/awscli-manpages
