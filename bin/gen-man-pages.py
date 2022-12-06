@@ -39,15 +39,16 @@ manpage.Writer.translate = manpage_translate_with_docinfo
 driver = awscli.clidriver.CLIDriver()
 
 def write_manpage(command):
-    filename = '%s.1aws.gz' % '-'.join(command)
+    filename = '%s.1aws' % '-'.join(command)
     command = command[1:]  # Strip off leading `aws`.
     command.append('help')
     print(filename)
     global output_file
     # output_file = open(filename, 'wb')
-    output_file = gzip.open(filename, mode='wb', compresslevel=9)
+    output_file = gzip.open(f"{filename}.gz", mode='wb', compresslevel=9)
     global driver
     driver.main(command)
+    output_file.close()
 
 # --------------------------------------------------------------------------------------------------
 
