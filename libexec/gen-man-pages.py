@@ -1,4 +1,4 @@
-#!/opt/homebrew/Cellar/awscli/2.9.1/libexec/bin/python3.11
+# -*- python -*-
 #
 # More info / inspiration:
 #
@@ -6,6 +6,7 @@
 #
 
 import subprocess
+import awscli
 import awscli.clidriver
 import awscli.help
 import gzip
@@ -25,10 +26,11 @@ class TroffHelpRenderer(object):
 awscli.help.get_renderer = lambda: TroffHelpRenderer()
 
 def manpage_translate_with_docinfo(manpage_writer):
+    global aws_cli_version
     visitor = manpage_writer.translator_class(manpage_writer.document)
     visitor._docinfo['manual_group']   = 'awscli'
     visitor._docinfo['manual_section'] = '1aws'
-    visitor._docinfo['version']        = '2.9.1'
+    visitor._docinfo['version']        = awscli.__version__
     manpage_writer.document.walkabout(visitor)
     manpage_writer.output = visitor.astext()
 
@@ -51,6 +53,8 @@ def write_manpage(command):
     output_file.close()
 
 # --------------------------------------------------------------------------------------------------
+
+
 
 write_manpage(['aws'])
 for command, subcommands in driver._get_command_table().items():
