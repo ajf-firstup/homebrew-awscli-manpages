@@ -5,6 +5,8 @@
 #   https://tanguy.ortolo.eu/blog/article153/awscli-manpages
 #
 
+import collections
+
 import subprocess
 import awscli
 import awscli.clidriver
@@ -38,7 +40,8 @@ manpage.Writer.translate = manpage_translate_with_docinfo
 
 # --------------------------------------------------------------------------------------------------
 
-driver = awscli.clidriver.CLIDriver()
+# driver = awscli.clidriver.CLIDriver()
+driver = awscli.clidriver.create_clidriver()
 
 def write_manpage(command):
     filename = '%s.1aws' % '-'.join(command)
@@ -54,11 +57,15 @@ def write_manpage(command):
 
 # --------------------------------------------------------------------------------------------------
 
+pending = collections.deque()
+pending.append( ( ['aws'], driver ) )
 
-
-write_manpage(['aws'])
-for command, subcommands in driver._get_command_table().items():
-    write_manpage(['aws', command])
-    if command != 'help':
-        for subcommand in subcommands._get_command_table():
-            write_manpage(['aws', command, subcommand])
+while len( pending ) > 0:
+    command_so_far, command_obj = pending.popleft()
+    write_manpage(command_so_far)
+    for subcommand, subcommand_table in command_obj.subcommand_table.items():
+        if subcommand == "help":
+            continue
+        new_command = command_so_far[:]
+        new_command.append( subcommand )
+        pending.append( ( new_command, subcommand_table ) )
